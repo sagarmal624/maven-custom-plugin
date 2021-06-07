@@ -1,0 +1,53 @@
+import  com.example.maven.domain.APIDto
+import java.util.ArrayList;
+import java.util.List
+import java.util.Objects
+import org.apache.commons.collections4.CollectionUtils;
+
+rule "When Request Type GET and Response Code 200,400,401,403,404 are Matached"
+    when
+         apiRequestDto :  APIDto( type=="get" && responseCodes contains "200" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404" );
+    then
+         apiRequestDto.setScore(apiRequestDto.getScore()+1);
+end;
+
+rule "When Request Type GET and Response Code 200,400,401,403,404 are Not Matched"
+    when
+         apiRequestDto :  APIDto(type=="get"  && false==(responseCodes contains "200" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404"));
+    then
+         List<String>messages=CollectionUtils.isEmpty(apiRequestDto.getMessages())?new ArrayList<>():apiRequestDto.getMessages();
+         messages.add("Http Request Response codes are not matched with [200,400,401,403,404] for GET Type");
+         apiRequestDto.setMessages(messages);
+end;
+
+rule "When Request Type POST and Response Code 201,202,400,401,403,404 are Matached"
+    when
+         apiRequestDto :  APIDto( type=="post" && responseCodes contains "201" && responseCodes contains "202" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404" );
+    then
+         apiRequestDto.setScore(apiRequestDto.getScore()+1);
+end;
+
+rule "When Request Type POST and Response Code 201,202,400,401,403,404 are Not Matched"
+    when
+         apiRequestDto :  APIDto(type=="post" && false==(responseCodes contains "201" && responseCodes contains "202" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404"));
+    then
+         List<String>messages=CollectionUtils.isEmpty(apiRequestDto.getMessages())?new ArrayList<>():apiRequestDto.getMessages();
+         messages.add("Http Request Response codes are not matched with [201,202,400,401,403,404] for POST Type");
+         apiRequestDto.setMessages(messages);
+end;
+
+rule "When Request Type PUT and Response Code 200,202,400,401,403,404 are Matached"
+    when
+         apiRequestDto :  APIDto( type=="put" && responseCodes contains "200" && responseCodes contains "202" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404" );
+    then
+         apiRequestDto.setScore(apiRequestDto.getScore()+1);
+end;
+
+rule "When Request Type PUT and Response Code 200,202,400,401,403,404 are Not Matched"
+    when
+         apiRequestDto :  APIDto(type=="put" && false==(responseCodes contains "200" && responseCodes contains "202" && responseCodes contains "400"  && responseCodes contains "401"  && responseCodes contains "403"  && responseCodes contains "404"));
+    then
+         List<String>messages=CollectionUtils.isEmpty(apiRequestDto.getMessages())?new ArrayList<>():apiRequestDto.getMessages();
+         messages.add("Http Request Response codes are not matched with [200,202,400,401,403,404] for PUT Type");
+         apiRequestDto.setMessages(messages);
+end;
