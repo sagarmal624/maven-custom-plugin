@@ -22,7 +22,7 @@ public class RuleService {
     private FreeMarketTemplateService freeMarketTemplateService;
 
     public Map<String,String> loadRuleFromDBIntoDrlFile() throws SQLException {
-        Connection connection = DBConnection.getConnection("root", "India@2022");
+        Connection connection = DBConnection.getConnection("XXXXX", "XXXXX");
         Statement statement = null;
         ResultSet resultSet = null;
         try {
