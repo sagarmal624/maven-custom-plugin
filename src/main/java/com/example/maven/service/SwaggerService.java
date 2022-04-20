@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 @Singleton
 public class SwaggerService {
     @Inject
-    DroolsConfig droolsConfig;
+   private DroolsConfig droolsConfig;
 
-    public List<ApiResponse> getRules(String swaggerUrl) {
-        List<APIDto> apiDtos = extractAPIInformation(swaggerUrl);
+    public List<ApiResponse> getRules(String swaggerUr,String drlPath) {
+        List<APIDto> apiDtos = extractAPIInformation(swaggerUr,drlPath);
         return apiDtos.stream().map(it -> {
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setUrl(it.getUrl());
@@ -39,7 +39,7 @@ public class SwaggerService {
         }).collect(Collectors.toList());
     }
 
-    public List<APIDto> extractAPIInformation(String swaggerUrl) {
+    public List<APIDto> extractAPIInformation(String swaggerUrl,String drlPath) {
         List<APIDto> apiDtos = new ArrayList<>();
         try {
             HashMap response = new ObjectMapper().readValue(new File(swaggerUrl), HashMap.class);
@@ -51,7 +51,7 @@ public class SwaggerService {
                     apiDto.setType(api.getKey());
                     apiDto.setUrl(entry.getKey());
                     apiDto.setResponseCodes(getResponseCode((Map<String, Object>) api.getValue()));
-                    KieSession kieSession = droolsConfig.getKieContainer().newKieSession();
+                    KieSession kieSession = droolsConfig.getKieContainer(drlPath).newKieSession();
                     kieSession.insert(apiDto);
                     kieSession.fireAllRules();
                     kieSession.dispose();
@@ -64,16 +64,16 @@ public class SwaggerService {
         return apiDtos;
     }
 
-    private static void isNounOrProun(String url) {
-        StanfordCoreNLP stanfordCoreNLP = Pipeline.getPipeline();
-        CoreDocument coreDocument = new CoreDocument(url);
-        stanfordCoreNLP.annotate(coreDocument);
-        List<CoreLabel> coreLabels = coreDocument.tokens();
-        for (CoreLabel coreLabel : coreLabels) {
-            String pos = coreLabel.get(CoreAnnotations.PartOfSpeechAnnotation.class);
-            System.out.println(coreLabel.originalText() + "=" + pos);
-        }
-    }
+//    private static void isNounOrProun(String url) {
+//        StanfordCoreNLP stanfordCoreNLP = Pipeline.getPipeline();
+//        CoreDocument coreDocument = new CoreDocument(url);
+//        stanfordCoreNLP.annotate(coreDocument);
+//        List<CoreLabel> coreLabels = coreDocument.tokens();
+//        for (CoreLabel coreLabel : coreLabels) {
+//            String pos = coreLabel.get(CoreAnnotations.PartOfSpeechAnnotation.class);
+//            System.out.println(coreLabel.originalText() + "=" + pos);
+//        }
+//    }
 
     private List<String> getResponseCode(Map<String, Object> map) {
         Map<String, Object> responses = (Map<String, Object>) map.get("responses");
